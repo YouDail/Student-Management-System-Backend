@@ -70,6 +70,17 @@ func FetchSingleDepartment(c *gin.Context) {
 	var result gin.H
 
 	id := c.Params.ByName("id")
+	
+	// 对已经转换的string再尝试转换成floa64，防止输入非整数数据
+	_, erro := strconv.ParseFloat(id, 64)
+	if erro != nil  {
+		result = gin.H{
+			"status": "failed",
+			"data":   "参数错误",
+		}
+		c.JSON(http.StatusBadRequest, result)
+		return
+	}
 
 	var department Department
 
