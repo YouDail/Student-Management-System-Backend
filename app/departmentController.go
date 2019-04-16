@@ -49,6 +49,22 @@ func CreateDepartment(c *gin.Context) {
 		})
 		return
 	}
+	
+	
+	//防止重复插入
+	q , err := db.Query("select id from department where name = ?", name)
+	var id string
+	for q.Next() {
+		err := q.Scan(&id)
+		CheckErr("插入前name值检查： ", err)
+		if id != "" {
+			log.Println("插入失败，name值已存在！ ID值是   ", id)
+			return false
+		}
+	}
+	err = q.Err()
+	CheckErr("查询表department NMAE字段错误： ", err)
+	
 
 	stmt, err := db.Prepare("insert into department(name) values (?)")
 	checkError(err)
